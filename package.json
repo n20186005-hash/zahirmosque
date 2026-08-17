@@ -1,0 +1,28 @@
+{
+  "name": "masjid-zahir-alor-setar",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Laman panduan tidak rasmi untuk Masjid Zahir di Alor Setar.",
+  "packageManager": "pnpm@9.15.5",
+  "engines": {
+    "node": "22.13.0",
+    "pnpm": "9.15.5"
+  },
+  "scripts": {
+    "dev": "astro dev --host 0.0.0.0",
+    "check": "astro check",
+    "build": "astro build",
+    "preview": "wrangler dev --assets ./dist",
+    "deploy": "pnpm build && wrangler deploy"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@astrojs/sitemap": "3.7.3",
+    "@tailwindcss/vite": "4.3.3",
+    "astro": "7.2.2",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3",
+    "wrangler": "4.123.0"
+  }
+}
