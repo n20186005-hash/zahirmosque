@@ -1,0 +1,60 @@
+---
+/**
+ * Masjid Zahir design reminder: one fixed visual guide; only complete locale dictionaries change.
+ * Never interpolate Malay, Chinese, or English fallback copy in this component.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { guide, locales, pathForLocale, type Locale } from "../data/guide";
+import { legal, legalPath, type LegalPageKey } from "../data/legal";
+import { siteExtra } from "../data/site-extra";
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const content = guide[locale];
+const footerLegal = legal[locale];
+const footerExtra = siteExtra[locale];
+const exteriorPhoto = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Masjid_zahir%2C_alor_setar.jpg/1280px-Masjid_zahir%2C_alor_setar.jpg";
+const facadePhoto = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Masjid_Zahir-zamwan.jpg/1280px-Masjid_Zahir-zamwan.jpg";
+const canonicalPath = pathForLocale(locale);
+const siteRoot = Astro.site ? new URL(canonicalPath, Astro.site).href : undefined;
+const alternates = locales.map((item) => ({ lang: guide[item].htmlLang, href: pathForLocale(item) }));
+const mapSrc = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6854.572623585371!2d100.36260087685542!3d6.120277527713845!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304b44bc1247c933%3A0x243d206184632813!2z5p-l5biM5bCU5riF55yf5a-6!5e1!3m2!1sms!2smy!4v1786954026060!5m2!1sms!2smy&hl=${content.mapLocale}`;
+const attractionSchema = {
+  "@context": "https://schema.org", "@type": ["TouristAttraction", "LocalBusiness"], name: "Masjid Zahir",
+  ...(siteRoot ? { url: siteRoot, "@id": siteRoot } : {}), inLanguage: content.htmlLang, description: content.description, image: facadePhoto,
+  address: { "@type": "PostalAddress", streetAddress: "Jalan Kampung Perak, Bandar Alor Setar", postalCode: "05150", addressLocality: "Alor Setar", addressRegion: "Kedah", addressCountry: "MY" },
+  geo: { "@type": "GeoCoordinates", latitude: 6.12028, longitude: 100.365 }, telephone: "+60-4-733-3288", priceRange: "RM0",
+  openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], opens: "05:00", closes: "22:00" }],
+  aggregateRating: { "@type": "AggregateRating", ratingValue: "4.6", reviewCount: "150", bestRating: "5", ratingExplanation: content.ratingExplanation },
+  sameAs: ["https://www.tripadvisor.com/Attraction_Review-g298282-d3935651-Reviews-Zahir_Mosque-Alor_Setar_Kota_Setar_District_Kedah.html"]
+};
+const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", inLanguage: content.htmlLang, mainEntity: content.faq.items.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) };
+---
+
+<BaseLayout title={content.title} description={content.description} canonicalPath={canonicalPath} imagePath={facadePhoto} schema={[attractionSchema, faqSchema]} lang={content.htmlLang} ogLocale={content.ogLocale} alternates={alternates}>
+  <a class="skip-link" href="#kandungan">{content.skip}</a>
+  <header class="site-header">
+    <a class="brand" href="#utama" aria-label="Masjid Zahir"><img src="/logo.svg" width="260" height="64" alt="Masjid Zahir · Alor Setar, Kedah" /></a>
+    <nav aria-label="Navigation"><a href="#sejarah">{content.nav.history}</a><a href="#lawatan">{content.nav.visit}</a><a href="#arah">{content.nav.directions}</a><a href="#sekitar">{content.nav.nearby}</a></nav>
+    <details class="language-switcher"><summary aria-label={content.languageName}>{content.languageShort}<span aria-hidden="true">⌄</span></summary><div class="language-menu">{locales.map((item) => <a class:list={{ active: item === locale }} href={pathForLocale(item)} hreflang={guide[item].htmlLang} lang={guide[item].htmlLang}>{guide[item].languageName}</a>)}</div></details>
+    <a class="header-map" href="#peta">{content.nav.map} <span aria-hidden="true">↗</span></a>
+  </header>
+  <main id="kandungan">
+    <section class="hero" id="utama" aria-labelledby="tajuk-utama"><div class="hero-ornament" aria-hidden="true"></div><div class="hero-copy"><p class="eyebrow"><span></span>{content.hero.location}</p><h1 id="tajuk-utama"><span>{content.hero.lead}</span><em>{content.hero.emphasis}</em><span>{content.hero.tail}</span></h1><p class="hero-lede">{content.hero.body}</p><div class="hero-actions"><a class="button button--dark" href="#lawatan">{content.hero.plan} <span aria-hidden="true">↓</span></a><a class="plain-link" href="#sejarah">{content.hero.history} <span aria-hidden="true">→</span></a></div></div><figure class="hero-image"><img src={facadePhoto} alt={content.hero.photoAlt} /><figcaption><span>01</span>{content.hero.caption}</figcaption><div class="photo-note">1912<small>{content.hero.note}</small></div></figure></section>
+
+    <section class="facts" aria-label="Info">{content.facts.map((fact) => <div><span>{fact.label}</span><strong>{fact.value}</strong><p>{fact.description}</p></div>)}</section>
+
+    <section class="heritage section-grid" id="sejarah" aria-labelledby="tajuk-sejarah"><div class="side-label"><span>02</span>{content.history.side}</div><div class="heritage-copy"><p class="eyebrow"><span></span>{content.history.eyebrow}</p><h2 id="tajuk-sejarah">{content.history.title}</h2><p>{content.history.p1}</p><p>{content.history.p2}</p></div><figure class="heritage-photo"><img src={exteriorPhoto} alt={content.history.photoAlt} loading="lazy" /><figcaption>{content.footer.photoCredit}</figcaption></figure><div class="heritage-mark">{content.history.timeline}</div></section>
+
+    <section class="visit-section" id="lawatan" aria-labelledby="tajuk-lawatan"><div class="visit-intro"><p class="eyebrow eyebrow--light"><span></span>{content.visit.eyebrow}</p><h2 id="tajuk-lawatan"><span>{content.visit.lead}</span><em>{content.visit.emphasis}</em><span>{content.visit.tail}</span></h2><p>{content.visit.body}</p></div><div class="visit-cards">{content.visit.cards.map((card, index) => <article><span class="card-number">{String(index + 1).padStart(2, "0")}</span><h3>{card.title}</h3><p>{card.body}</p></article>)}</div></section>
+
+    <section class="practical section-grid" id="arah" aria-labelledby="tajuk-arah"><div class="side-label"><span>03</span>{content.directions.side}</div><div class="practical-title"><p class="eyebrow"><span></span>{content.directions.eyebrow}</p><h2 id="tajuk-arah">{content.directions.title}</h2><p>{content.directions.body}</p></div><div class="transport-list">{content.directions.items.map((item) => <article><div class="transport-icon" aria-hidden="true">{item.icon}</div><div><h3>{item.title}</h3><p>{item.body}</p></div></article>)}</div></section>
+
+    <section class="map-section" id="peta" aria-labelledby="tajuk-peta"><div><p class="eyebrow"><span></span>{content.map.eyebrow}</p><h2 id="tajuk-peta">{content.map.title}</h2><p>{content.map.body}</p></div><iframe title={content.map.iframeTitle} src={mapSrc} width="600" height="450" style="border:0;" allowfullscreen loading="eager" referrerpolicy="strict-origin-when-cross-origin"></iframe></section>
+
+    <section class="around-section" id="sekitar" aria-labelledby="tajuk-sekitar"><div class="around-heading"><p class="eyebrow"><span></span>{content.nearby.eyebrow}</p><h2 id="tajuk-sekitar">{content.nearby.title}</h2><p>{content.nearby.body}</p></div><div class="around-grid">{content.nearby.cards.map((card, index) => <article class:list={["around-card", index % 2 === 0 ? "around-card--food" : "around-card--sight"]}><span>{card.label}</span><h3>{card.title}</h3><p>{card.body}</p></article>)}</div></section>
+
+    <section class="faq-section" aria-labelledby="tajuk-faq"><div><p class="eyebrow"><span></span>{content.faq.eyebrow}</p><h2 id="tajuk-faq">{content.faq.title}</h2><p>{content.faq.body}</p></div><div class="faq-list">{content.faq.items.map((item) => <details><summary>{item.question}<span aria-hidden="true">+</span></summary><p>{item.answer}</p></details>)}</div></section>
+  </main>
+  <footer><div class="footer-logo"><img src="/favicon.svg" width="42" height="42" alt="" /><p><b>MASJID ZAHIR</b><span>ALOR SETAR · KEDAH</span></p></div><div class="footer-note"><p>{footerLegal.declaration}</p><p>{footerLegal.imageRights}</p><p class="legal-review">{footerExtra.review}</p><p><a href="mailto:takerusota9@protommail.com">{footerExtra.contact}: takerusota9@protommail.com</a></p><p class="sources">{content.footer.sources}: <a href="https://pbt.kedah.gov.my/index.php/majlis-bandaraya-alor-setar/" target="_blank" rel="noreferrer">MBAS</a> · <a href="https://portal.kedah.gov.my/" target="_blank" rel="noreferrer">Kerajaan Negeri Kedah</a> · <a href="https://www.malaysia.travel/" target="_blank" rel="noreferrer">Tourism Malaysia</a></p></div><div class="footer-utility"><div class="legal-links">{(["privacy", "terms", "cookies"] as LegalPageKey[]).map((key) => <a href={legalPath(locale, key)}>{footerLegal.links[key]}</a>)}<a href={locale === "ms" ? "/credits/" : `/${locale}/credits/`}>{footerExtra.creditsLink}</a></div><div class="photo-credit">{content.footer.photoCredit}</div></div></footer>
+</BaseLayout>

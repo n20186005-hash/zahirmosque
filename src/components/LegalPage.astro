@@ -1,0 +1,45 @@
+---
+/** Legal-page design reminder: calm, readable information pages that mirror the guide's limestone-and-ink visual language. */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { guide, locales, pathForLocale, type Locale } from "../data/guide";
+import { legal, legalPath, type LegalPageKey } from "../data/legal";
+import { siteExtra } from "../data/site-extra";
+
+interface Props { locale: Locale; page: LegalPageKey }
+const { locale, page: pageKey } = Astro.props;
+const common = legal[locale];
+const extra = siteExtra[locale];
+const page = common[pageKey];
+const alternates = locales.map((item) => ({ lang: guide[item].htmlLang, href: legalPath(item, pageKey) }));
+---
+
+<BaseLayout title={`${page.title} · ${guide[locale].title}`} description={page.intro} canonicalPath={legalPath(locale, pageKey)} lang={guide[locale].htmlLang} ogLocale={guide[locale].ogLocale} alternates={alternates}>
+  <header class="site-header legal-header">
+    <a class="brand" href={pathForLocale(locale)} aria-label="Masjid Zahir"><img src="/logo.svg" width="260" height="64" alt="Masjid Zahir · Alor Setar, Kedah" /></a>
+    <details class="language-switcher"><summary aria-label={guide[locale].languageName}>{guide[locale].languageShort}<span aria-hidden="true">⌄</span></summary><div class="language-menu">{locales.map((item) => <a class:list={{ active: item === locale }} href={legalPath(item, pageKey)} hreflang={guide[item].htmlLang} lang={guide[item].htmlLang}>{guide[item].languageName}</a>)}</div></details>
+  </header>
+  <main class="legal-page">
+    <p class="eyebrow"><span></span>MASJID ZAHIR · ALOR SETAR</p>
+    <h1>{page.title}</h1>
+    <p class="legal-intro">{page.intro}</p>
+    <aside class="independence-statement"><p>{common.declaration}</p><p>{common.imageRights}</p><p class="legal-review">{extra.review}</p><p><a href="mailto:takerusota9@protommail.com">{extra.contact}: takerusota9@protommail.com</a></p></aside>
+    <div class="legal-sections">{page.sections.map((section) => <section><h2>{section.heading}</h2><p>{section.body}</p></section>)}</div>
+    {pageKey === "cookies" && <section class="cookie-control" data-cookie-control data-unset={common.cookies.unset} data-granted={common.cookies.granted} data-denied={common.cookies.denied}><p class="cookie-status" aria-live="polite"></p><div><button type="button" class="button button--dark" data-consent="granted">{common.cookies.allow}</button><button type="button" class="cookie-deny" data-consent="denied">{common.cookies.deny}</button></div></section>}
+    <a class="plain-link legal-back" href={pathForLocale(locale)}>← {common.back}</a>
+  </main>
+  <footer class="legal-footer"><div class="footer-logo"><img src="/favicon.svg" width="42" height="42" alt="" /><p><b>MASJID ZAHIR</b><span>ALOR SETAR · KEDAH</span></p></div><div class="legal-links">{(["privacy", "terms", "cookies"] as LegalPageKey[]).map((key) => <a class:list={{ active: key === pageKey }} href={legalPath(locale, key)}>{common.links[key]}</a>)}<a href={locale === "ms" ? "/credits/" : `/${locale}/credits/`}>{extra.creditsLink}</a><a href="mailto:takerusota9@protommail.com">{extra.contact}</a></div></footer>
+  {pageKey === "cookies" && <script is:inline>
+    const control = document.querySelector('[data-cookie-control]');
+    if (control) {
+      const status = control.querySelector('.cookie-status');
+      const message = (value) => value === 'granted' ? control.dataset.granted : value === 'denied' ? control.dataset.denied : control.dataset.unset;
+      const current = localStorage.getItem('mz-analytics-consent');
+      status.textContent = message(current);
+      control.querySelectorAll('[data-consent]').forEach((button) => button.addEventListener('click', () => {
+        localStorage.setItem('mz-analytics-consent', button.dataset.consent);
+        status.textContent = message(button.dataset.consent);
+        window.setTimeout(() => window.location.reload(), 200);
+      }));
+    }
+  </script>}
+</BaseLayout>

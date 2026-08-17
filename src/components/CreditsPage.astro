@@ -1,0 +1,17 @@
+---
+/** Image credits page: transparent, source-linked records for every third-party photograph shown on the site. */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { guide, locales, pathForLocale, type Locale } from "../data/guide";
+import { siteExtra } from "../data/site-extra";
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const content = guide[locale];
+const extra = siteExtra[locale];
+const creditsPath = locale === "ms" ? "/credits/" : `/${locale}/credits/`;
+const alternates = locales.map((item) => ({ lang: guide[item].htmlLang, href: item === "ms" ? "/credits/" : `/${item}/credits/` }));
+---
+<BaseLayout title={`${extra.credits.title} · ${content.title}`} description={extra.credits.intro} canonicalPath={creditsPath} lang={content.htmlLang} ogLocale={content.ogLocale} alternates={alternates}>
+  <header class="site-header legal-header"><a class="brand" href={pathForLocale(locale)} aria-label="Masjid Zahir"><img src="/logo.svg" width="260" height="64" alt="Masjid Zahir · Alor Setar, Kedah" /></a><details class="language-switcher"><summary aria-label={content.languageName}>{content.languageShort}<span aria-hidden="true">⌄</span></summary><div class="language-menu">{locales.map((item) => <a class:list={{ active: item === locale }} href={item === "ms" ? "/credits/" : `/${item}/credits/`} hreflang={guide[item].htmlLang} lang={guide[item].htmlLang}>{guide[item].languageName}</a>)}</div></details></header>
+  <main class="legal-page credits-page"><p class="eyebrow"><span></span>MASJID ZAHIR · ALOR SETAR</p><h1>{extra.credits.title}</h1><p class="legal-intro">{extra.credits.intro}</p><div class="credit-list">{extra.credits.entries.map((entry) => <article class="credit-card"><img src={entry.image} alt={entry.title} loading="lazy" /><div><h2>{entry.title}</h2><dl><div><dt>{extra.credits.use}</dt><dd>{entry.use}</dd></div><div><dt>{extra.credits.source}</dt><dd><a href={entry.source} target="_blank" rel="noreferrer">{entry.sourceLabel} ↗</a></dd></div><div><dt>{extra.credits.author}</dt><dd>{entry.author}</dd></div><div><dt>{extra.credits.licence}</dt><dd>{entry.licence}</dd></div></dl></div></article>)}</div><aside class="independence-statement"><p>{extra.credits.note}</p></aside><a class="plain-link legal-back" href={pathForLocale(locale)}>← {content.skip}</a></main>
+</BaseLayout>

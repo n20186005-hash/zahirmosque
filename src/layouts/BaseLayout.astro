@@ -1,0 +1,65 @@
+---
+/**
+ * Masjid Zahir design reminder: every locale keeps the black-dome palette, precise gold rules,
+ * and warm limestone space while supplying complete language-specific copy.
+ */
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath?: string;
+  imagePath?: string;
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+  lang?: string;
+  ogLocale?: string;
+  alternates?: { lang: string; href: string }[];
+}
+
+const { title, description, canonicalPath = "/", imagePath, schema, lang = "ms", ogLocale = "ms_MY", alternates = [] } = Astro.props;
+const canonical = Astro.site ? new URL(canonicalPath, Astro.site).href : canonicalPath;
+const image = Astro.site && imagePath ? new URL(imagePath, Astro.site).href : undefined;
+const schemaJson = schema ? JSON.stringify(schema) : undefined;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#17221f" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {alternates.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={Astro.site ? new URL(alternate.href, Astro.site).href : alternate.href} />)}
+    {alternates.length > 0 && <link rel="alternate" hreflang="x-default" href={Astro.site ? new URL("/", Astro.site).href : "/"} />}
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {Astro.site && <meta property="og:url" content={canonical} />}
+    {image && <meta property="og:image" content={image} />}
+    <meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
+    <title>{title}</title>
+    {schemaJson && <script is:inline type="application/ld+json" set:html={schemaJson} />}
+    <script is:inline>
+      if (localStorage.getItem('mz-analytics-consent') === 'granted') {
+        const analytics = document.createElement('script');
+        analytics.async = true;
+        analytics.src = 'https://www.googletagmanager.com/gtag/js?id=G-HXM22WWPKP';
+        document.head.appendChild(analytics);
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function(){ window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', 'G-HXM22WWPKP');
+      }
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
