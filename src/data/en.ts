@@ -3,8 +3,8 @@ import type { GuideContent } from "./types";
 /** English: complete source copy for the English locale page. */
 export const en: GuideContent = {
   htmlLang: "en", ogLocale: "en_US", mapLocale: "en", languageName: "English", languageShort: "EN",
-  title: "Masjid Zahir · Alor Setar, Kedah",
-  description: "An independent visitor guide to Masjid Zahir: history, respectful visiting, directions, practical information, and places nearby in Alor Setar.",
+  title: "Masjid Zahir Alor Setar | Travel Guide",
+  description: "Visitor guide to Zahir Mosque, Alor Setar: 1912 history, reference hours 05:00–22:00, free entry, dress code, how to get there, and places nearby.",
   skip: "Skip to content",
   nav: { history: "History", visit: "Visit", directions: "Directions", nearby: "Nearby", map: "Open map" },
   hero: { location: "JALAN KAMPUNG PERAK · ALOR SETAR", lead: "White that", emphasis: "holds", tail: "five black domes.", body: "In the heart of Alor Setar, Masjid Zahir is a place of worship, a keeper of Kedah's memory, and an architectural landmark read through its arches, verandahs, and sky.", plan: "Plan a visit", history: "Discover its heritage", photoAlt: "The black domes and white arches of Masjid Zahir in Alor Setar", caption: "DOMES & VERANDAHS · MASJID ZAHIR", note: "Kedah heritage" },

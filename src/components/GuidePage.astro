@@ -20,7 +20,7 @@ const siteRoot = Astro.site ? new URL(canonicalPath, Astro.site).href : undefine
 const alternates = locales.map((item) => ({ lang: guide[item].htmlLang, href: pathForLocale(item) }));
 const mapSrc = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6854.572623585371!2d100.36260087685542!3d6.120277527713845!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304b44bc1247c933%3A0x243d206184632813!2z5p-l5biM5bCU5riF55yf5a-6!5e1!3m2!1sms!2smy!4v1786954026060!5m2!1sms!2smy&hl=${content.mapLocale}`;
 const attractionSchema = {
-  "@context": "https://schema.org", "@type": ["TouristAttraction", "LocalBusiness"], name: "Masjid Zahir",
+  "@context": "https://schema.org", "@type": ["TouristAttraction", "PlaceOfWorship", "LocalBusiness"], name: "Masjid Zahir",
   ...(siteRoot ? { url: siteRoot, "@id": siteRoot } : {}), inLanguage: content.htmlLang, description: content.description, image: facadePhoto,
   address: { "@type": "PostalAddress", streetAddress: "Jalan Kampung Perak, Bandar Alor Setar", postalCode: "05150", addressLocality: "Alor Setar", addressRegion: "Kedah", addressCountry: "MY" },
   geo: { "@type": "GeoCoordinates", latitude: 6.12028, longitude: 100.365 }, telephone: "+60-4-733-3288", priceRange: "RM0",

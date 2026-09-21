@@ -3,8 +3,8 @@ import type { GuideContent } from "./types";
 /** Bahasa Melayu: complete source copy for the default root URL. */
 export const ms: GuideContent = {
   htmlLang: "ms", ogLocale: "ms_MY", mapLocale: "ms", languageName: "Bahasa Melayu", languageShort: "BM",
-  title: "Masjid Zahir · Alor Setar, Kedah",
-  description: "Panduan tidak rasmi untuk melawat Masjid Zahir: sejarah, adab, arah, kemudahan dan tempat sekitar di Alor Setar.",
+  title: "Masjid Zahir Alor Setar | Panduan Pelancongan",
+  description: "Panduan pelawat Masjid Zahir Alor Setar: sejarah 1912, waktu rujukan 05:00–22:00, kemasukan percuma, adab berpakaian, cara ke sana dan tempat sekitar.",
   skip: "Lompat ke kandungan",
   nav: { history: "Sejarah", visit: "Lawatan", directions: "Arah", nearby: "Sekitar", map: "Buka peta" },
   hero: { location: "JALAN KAMPUNG PERAK · ALOR SETAR", lead: "Putih yang", emphasis: "menjaga", tail: "lima kubah hitam.", body: "Masjid Zahir berdiri di tengah Alor Setar sebagai ruang ibadah, ingatan Kedah dan mercu seni bina yang dibaca melalui lengkung, serambi dan langit.", plan: "Rancang lawatan", history: "Kenali warisannya", photoAlt: "Fasad Masjid Zahir dengan kubah hitam dan lengkung putih di Alor Setar", caption: "KUBAH & SERAMBI · MASJID ZAHIR", note: "warisan Kedah" },

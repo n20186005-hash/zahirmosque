@@ -3,8 +3,8 @@ import type { GuideContent } from "./types";
 /** 简体中文：完整、独立的中文页面文案。 */
 export const zhCN: GuideContent = {
   htmlLang: "zh-CN", ogLocale: "zh_CN", mapLocale: "zh-CN", languageName: "简体中文", languageShort: "中文",
-  title: "查希尔清真寺 · 亚罗士打，吉打州",
-  description: "查希尔清真寺非官方网站：了解历史、参观礼仪、交通、设施与亚罗士打周边去处。",
+  title: "查希尔清真寺亚罗士打旅游指南",
+  description: "查希尔清真寺参观指南：开放时间 05:00–22:00、免费入场、着装礼仪、交通方式、1912 年历史与亚罗士打周边景点。",
   skip: "跳到主要内容",
   nav: { history: "历史", visit: "参观", directions: "交通", nearby: "周边", map: "打开地图" },
   hero: { location: "甘榜霹雳路 · 亚罗士打", lead: "白色的", emphasis: "守护着", tail: "五座黑色穹顶。", body: "查希尔清真寺矗立于亚罗士打市中心，是祈祷的场所、吉打记忆的所在，也是一座可从拱门、回廊与天空细读的建筑地标。", plan: "规划参观", history: "了解其传承", photoAlt: "亚罗士打查希尔清真寺的黑色穹顶与白色拱门", caption: "穹顶与回廊 · 查希尔清真寺", note: "吉打遗产" },

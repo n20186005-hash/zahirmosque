@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://zahirmosque.com/sitemap-index.xml
