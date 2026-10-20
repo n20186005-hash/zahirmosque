@@ -18,16 +18,19 @@ const facadePhoto = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/M
 const canonicalPath = pathForLocale(locale);
 const siteRoot = Astro.site ? new URL(canonicalPath, Astro.site).href : undefined;
 const alternates = locales.map((item) => ({ lang: guide[item].htmlLang, href: pathForLocale(item) }));
-const mapSrc = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6854.572623585371!2d100.36260087685542!3d6.120277527713845!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304b44bc1247c933%3A0x243d206184632813!2z5p-l5biM5bCU5riF55yf5a-6!5e1!3m2!1sms!2smy!4v1786954026060!5m2!1sms!2smy&hl=${content.mapLocale}`;
+const mapSrc = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6854.572623585371!2d100.3651758!3d6.1202722!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304b44bc1247c933%3A0x243d206184632813!2z5p-l5biM5bCU5riF55yf5a-6!5e1!3m2!1sms!2smy!4v1786954026060!5m2!1sms!2smy&hl=${content.mapLocale}`;
+const mapLink = "https://maps.app.goo.gl/kfht5TyPhxcTxfLJ6";
 const attractionSchema = {
-  "@context": "https://schema.org", "@type": ["TouristAttraction", "PlaceOfWorship", "LocalBusiness"], name: "Masjid Zahir",
+  "@context": "https://schema.org", "@type": "Mosque", name: "Masjid Zahir",
   ...(siteRoot ? { url: siteRoot, "@id": siteRoot } : {}), inLanguage: content.htmlLang, description: content.description, image: facadePhoto,
   address: { "@type": "PostalAddress", streetAddress: "Jalan Kampung Perak, Bandar Alor Setar", postalCode: "05150", addressLocality: "Alor Setar", addressRegion: "Kedah", addressCountry: "MY" },
-  geo: { "@type": "GeoCoordinates", latitude: 6.12028, longitude: 100.365 }, telephone: "+60-4-733-3288", priceRange: "RM0",
-  openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], opens: "05:00", closes: "22:00" }],
-  aggregateRating: { "@type": "AggregateRating", ratingValue: "4.6", reviewCount: "150", bestRating: "5", ratingExplanation: content.ratingExplanation },
-  sameAs: ["https://www.tripadvisor.com/Attraction_Review-g298282-d3935651-Reviews-Zahir_Mosque-Alor_Setar_Kota_Setar_District_Kedah.html"]
+  geo: { "@type": "GeoCoordinates", latitude: 6.1202722, longitude: 100.3651758 }, hasMap: mapLink,
 };
+const publicCheck = {
+  ms: { title: "Semakan sumber: 19 Oktober 2026", snapshot: "Google Maps: 4.8/5 daripada 5,442 ulasan. Ini penarafan Maps, bukan ulasan yang dikumpulkan oleh panduan ini. Maps menyenaraikan 05:00–23:00 setiap hari dan telefon +60 4-733 3288; ia bukan jadual pelawat, kebenaran masuk bukan Islam atau waktu solat yang tepat.", call: "Telefon dalam senarai Maps", rule: "Tanya petugas tentang akses, pakaian, sebarang bayaran dan fotografi. Keutamaan diberikan kepada ibadah serta arahan di lokasi." },
+  en: { title: "Sources checked: 19 October 2026", snapshot: "Google Maps: 4.8/5 from 5,442 reviews. This is a Maps rating, not reviews collected by this guide. Maps lists 05:00–23:00 daily and telephone +60 4-733 3288; this is not a visitor timetable, non-Muslim entry permission or an accurate prayer schedule.", call: "Phone listed on Maps", rule: "Ask staff about access, clothing, any charges and photography. Worship and on-site instructions take priority." },
+  "zh-CN": { title: "资料核查日期：2026年10月19日", snapshot: "Google Maps：4.8/5分、5,442条评价。此为Maps评分，并非本站收集。Maps列每天05:00–23:00，电话+60 4-733 3288；这不是游客时刻表、非穆斯林入内许可或准确的礼拜时间。", call: "Maps所列电话", rule: "进入、着装、收费及摄影规定请询问工作人员。礼拜活动与现场指引优先。" }
+}[locale];
 const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", inLanguage: content.htmlLang, mainEntity: content.faq.items.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) };
 ---
 
@@ -40,6 +43,7 @@ const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", inLang
     <a class="header-map" href="#peta">{content.nav.map} <span aria-hidden="true">↗</span></a>
   </header>
   <main id="kandungan">
+    <aside class="public-check"><h2>{publicCheck.title}</h2><p>{publicCheck.snapshot}</p><p>{publicCheck.rule}</p><p><a href={mapLink} target="_blank" rel="noreferrer">Google Maps ↗</a> · <a href="tel:+6047333288">{publicCheck.call}</a> · <a href="https://jheaik.kedah.gov.my/masjid-zahir/">JHEAIK</a> · <a href="https://masjid.islam.gov.my/maklumatDetailMS/1/0203026">JAKIM</a></p></aside>
     <section class="hero" id="utama" aria-labelledby="tajuk-utama"><div class="hero-ornament" aria-hidden="true"></div><div class="hero-copy"><p class="eyebrow"><span></span>{content.hero.location}</p><h1 id="tajuk-utama"><span>{content.hero.lead}</span><em>{content.hero.emphasis}</em><span>{content.hero.tail}</span></h1><p class="hero-lede">{content.hero.body}</p><div class="hero-actions"><a class="button button--dark" href="#lawatan">{content.hero.plan} <span aria-hidden="true">↓</span></a><a class="plain-link" href="#sejarah">{content.hero.history} <span aria-hidden="true">→</span></a></div></div><figure class="hero-image"><img src={facadePhoto} alt={content.hero.photoAlt} /><figcaption><span>01</span>{content.hero.caption}</figcaption><div class="photo-note">1912<small>{content.hero.note}</small></div></figure></section>
 
     <section class="facts" aria-label="Info">{content.facts.map((fact) => <div><span>{fact.label}</span><strong>{fact.value}</strong><p>{fact.description}</p></div>)}</section>

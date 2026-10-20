@@ -12,9 +12,6 @@ export default defineConfig({
   site,
   integrations: site ? [sitemap()] : [],
   vite: {
-    server: {
-      allowedHosts: ["4321-ic47rq1kimgg5hpyrhz78-40802e24.us3.manus.computer"],
-    },
     plugins: [tailwindcss()],
   },
 });

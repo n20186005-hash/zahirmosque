@@ -14,9 +14,10 @@ interface Props {
   lang?: string;
   ogLocale?: string;
   alternates?: { lang: string; href: string }[];
+  noindex?: boolean;
 }
 
-const { title, description, canonicalPath = "/", imagePath, schema, lang = "ms", ogLocale = "ms_MY", alternates = [] } = Astro.props;
+const { title, description, canonicalPath = "/", imagePath, schema, lang = "ms", ogLocale = "ms_MY", alternates = [], noindex = false } = Astro.props;
 const canonical = Astro.site ? new URL(canonicalPath, Astro.site).href : canonicalPath;
 const image = Astro.site && imagePath ? new URL(imagePath, Astro.site).href : undefined;
 const schemaJson = schema ? JSON.stringify(schema) : undefined;
@@ -29,9 +30,10 @@ const schemaJson = schema ? JSON.stringify(schema) : undefined;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#17221f" />
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {!noindex && <link rel="canonical" href={canonical} />}
+    <meta name="robots" content={noindex ? "noindex, follow" : "index, follow, max-image-preview:large"} />
     {alternates.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={Astro.site ? new URL(alternate.href, Astro.site).href : alternate.href} />)}
-    {alternates.length > 0 && <link rel="alternate" hreflang="x-default" href={Astro.site ? new URL("/", Astro.site).href : "/"} />}
+    {alternates.length > 0 && <link rel="alternate" hreflang="x-default" href={Astro.site ? new URL(alternates.find((item) => item.lang === "ms")?.href || canonicalPath, Astro.site).href : canonicalPath} />}
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png" />
@@ -41,13 +43,15 @@ const schemaJson = schema ? JSON.stringify(schema) : undefined;
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    {Astro.site && <meta property="og:url" content={canonical} />}
+    {Astro.site && !noindex && <meta property="og:url" content={canonical} />}
     {image && <meta property="og:image" content={image} />}
     <meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
     <title>{title}</title>
     {schemaJson && <script is:inline type="application/ld+json" set:html={schemaJson} />}
     <script is:inline>
-      if (localStorage.getItem('mz-analytics-consent') === 'granted') {
+      let analyticsConsent = null;
+      try { analyticsConsent = localStorage.getItem('mz-analytics-consent'); } catch {}
+      if (analyticsConsent === 'granted') {
         const analytics = document.createElement('script');
         analytics.async = true;
         analytics.src = 'https://www.googletagmanager.com/gtag/js?id=G-HXM22WWPKP';

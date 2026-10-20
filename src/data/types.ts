@@ -13,5 +13,4 @@ export type GuideContent = {
   nearby: { eyebrow: string; title: string; body: string; cards: { label: string; title: string; body: string }[] };
   faq: { eyebrow: string; title: string; body: string; items: { question: string; answer: string }[] };
   footer: { disclaimer: string; sources: string; photoCredit: string };
-  ratingExplanation: string;
 };
