@@ -33,10 +33,11 @@ const alternates = locales.map((item) => ({ lang: guide[item].htmlLang, href: le
     if (control) {
       const status = control.querySelector('.cookie-status');
       const message = (value) => value === 'granted' ? control.dataset.granted : value === 'denied' ? control.dataset.denied : control.dataset.unset;
-      const current = localStorage.getItem('mz-analytics-consent');
+      let current = null;
+      try { current = localStorage.getItem('mz-analytics-consent'); } catch {}
       status.textContent = message(current);
       control.querySelectorAll('[data-consent]').forEach((button) => button.addEventListener('click', () => {
-        localStorage.setItem('mz-analytics-consent', button.dataset.consent);
+        try { localStorage.setItem('mz-analytics-consent', button.dataset.consent); } catch {}
         status.textContent = message(button.dataset.consent);
         window.setTimeout(() => window.location.reload(), 200);
       }));
