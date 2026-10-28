@@ -1,0 +1,13 @@
+---
+import TopicPage from "../../components/TopicPage.astro";
+import { locales, type Locale } from "../../data/guide";
+import { topicSlugsForLocale } from "../../data/topics";
+export function getStaticPaths() {
+  return locales
+    .filter((l) => l !== "ms")
+    .flatMap((locale) => topicSlugsForLocale(locale).map((slug) => ({ params: { locale, topic: slug } })));
+}
+const locale = Astro.params.locale as Exclude<Locale, "ms">;
+const slug = Astro.params.topic as string;
+---
+<TopicPage {locale} slug={slug} />

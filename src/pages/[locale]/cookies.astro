@@ -1,0 +1,9 @@
+---
+import LegalPage from "../../components/LegalPage.astro";
+import { locales, type Locale } from "../../data/guide";
+export function getStaticPaths() {
+  return locales.filter((l) => l !== "ms").map((locale) => ({ params: { locale } }));
+}
+const locale = Astro.params.locale as Exclude<Locale, "ms">;
+---
+<LegalPage {locale} page="cookies" />

@@ -7,12 +7,21 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { guide, locales, pathForLocale, type Locale } from "../data/guide";
 import { legal, legalPath, type LegalPageKey } from "../data/legal";
 import { siteExtra } from "../data/site-extra";
+import { topicSlugsForLocale, topicPathForLocale, getTopic } from "../data/topics";
+import type { TopicContent } from "../data/types";
 
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const content = guide[locale];
 const footerLegal = legal[locale];
 const footerExtra = siteExtra[locale];
+const localTopics = topicSlugsForLocale(locale).map((s) => getTopic(locale, s)).filter((t): t is TopicContent => Boolean(t));
+const exploreLabels: Record<Locale, { eyebrow: string; title: string; readMore: string }> = {
+  ms: { eyebrow: "PANDUAN LAIN", title: "Terokai lebih banyak panduan", readMore: "Baca lagi" },
+  "zh-CN": { eyebrow: "更多指南", title: "探索更多指南", readMore: "继续阅读" },
+  en: { eyebrow: "MORE GUIDES", title: "Explore more guides", readMore: "Read more" },
+};
+const explore = exploreLabels[locale];
 const exteriorPhoto = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Masjid_zahir%2C_alor_setar.jpg/1280px-Masjid_zahir%2C_alor_setar.jpg";
 const facadePhoto = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Masjid_Zahir-zamwan.jpg/1280px-Masjid_Zahir-zamwan.jpg";
 const canonicalPath = pathForLocale(locale);
@@ -21,15 +30,23 @@ const alternates = locales.map((item) => ({ lang: guide[item].htmlLang, href: pa
 const mapSrc = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6854.572623585371!2d100.3651758!3d6.1202722!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304b44bc1247c933%3A0x243d206184632813!2z5p-l5biM5bCU5riF55yf5a-6!5e1!3m2!1sms!2smy!4v1786954026060!5m2!1sms!2smy&hl=${content.mapLocale}`;
 const mapLink = "https://maps.app.goo.gl/kfht5TyPhxcTxfLJ6";
 const attractionSchema = {
-  "@context": "https://schema.org", "@type": "Mosque", name: "Masjid Zahir",
-  ...(siteRoot ? { url: siteRoot, "@id": siteRoot } : {}), inLanguage: content.htmlLang, description: content.description, image: facadePhoto,
+  "@context": "https://schema.org",
+  "@type": ["Mosque", "TouristAttraction"],
+  name: "Masjid Zahir",
+  ...(siteRoot ? { url: siteRoot, "@id": siteRoot } : {}),
+  inLanguage: content.htmlLang,
+  description: `${content.description} This is an independent, non-commercial visitor guide; Masjid Zahir is an active mosque managed by JHEAIK (Kedah State Islamic Religious Council) and is not affiliated with this guide.`,
+  image: facadePhoto,
+  isAccessibleForFree: true,
   address: { "@type": "PostalAddress", streetAddress: "Jalan Kampung Perak, Bandar Alor Setar", postalCode: "05150", addressLocality: "Alor Setar", addressRegion: "Kedah", addressCountry: "MY" },
-  geo: { "@type": "GeoCoordinates", latitude: 6.1202722, longitude: 100.3651758 }, hasMap: mapLink,
+  geo: { "@type": "GeoCoordinates", latitude: 6.1197, longitude: 100.3662 },
+  hasMap: mapLink,
+  openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], opens: "05:00", closes: "23:00" }],
 };
 const publicCheck = {
-  ms: { title: "Semakan sumber: 19 Oktober 2026", snapshot: "Google Maps: 4.8/5 daripada 5,442 ulasan. Ini penarafan Maps, bukan ulasan yang dikumpulkan oleh panduan ini. Maps menyenaraikan 05:00–23:00 setiap hari dan telefon +60 4-733 3288; ia bukan jadual pelawat, kebenaran masuk bukan Islam atau waktu solat yang tepat.", call: "Telefon dalam senarai Maps", rule: "Tanya petugas tentang akses, pakaian, sebarang bayaran dan fotografi. Keutamaan diberikan kepada ibadah serta arahan di lokasi." },
-  en: { title: "Sources checked: 19 October 2026", snapshot: "Google Maps: 4.8/5 from 5,442 reviews. This is a Maps rating, not reviews collected by this guide. Maps lists 05:00–23:00 daily and telephone +60 4-733 3288; this is not a visitor timetable, non-Muslim entry permission or an accurate prayer schedule.", call: "Phone listed on Maps", rule: "Ask staff about access, clothing, any charges and photography. Worship and on-site instructions take priority." },
-  "zh-CN": { title: "资料核查日期：2026年10月19日", snapshot: "Google Maps：4.8/5分、5,442条评价。此为Maps评分，并非本站收集。Maps列每天05:00–23:00，电话+60 4-733 3288；这不是游客时刻表、非穆斯林入内许可或准确的礼拜时间。", call: "Maps所列电话", rule: "进入、着装、收费及摄影规定请询问工作人员。礼拜活动与现场指引优先。" }
+  ms: { title: "Semakan sumber: 19 Oktober 2026", snapshot: "Google Maps: 4.8/5 daripada 5,453 ulasan. Ini penarafan Maps, bukan ulasan yang dikumpulkan oleh panduan ini. Maps menyenaraikan 05:00–23:00 setiap hari dan telefon +60 4-733 3288; ia bukan jadual pelawat, kebenaran masuk bukan Islam atau waktu solat yang tepat.", call: "Telefon dalam senarai Maps", rule: "Tanya petugas tentang akses, pakaian, sebarang bayaran dan fotografi. Keutamaan diberikan kepada ibadah serta arahan di lokasi." },
+  en: { title: "Sources checked: 19 October 2026", snapshot: "Google Maps: 4.8/5 from 5,453 reviews. This is a Maps rating, not reviews collected by this guide. Maps lists 05:00–23:00 daily and telephone +60 4-733 3288; this is not a visitor timetable, non-Muslim entry permission or an accurate prayer schedule.", call: "Phone listed on Maps", rule: "Ask staff about access, clothing, any charges and photography. Worship and on-site instructions take priority." },
+  "zh-CN": { title: "资料核查日期：2026年10月19日", snapshot: "Google Maps：4.8/5分、5,453条评价。此为Maps评分，并非本站收集。Maps列每天05:00–23:00，电话+60 4-733 3288；这不是游客时刻表、非穆斯林入内许可或准确的礼拜时间。", call: "Maps所列电话", rule: "进入、着装、收费及摄影规定请询问工作人员。礼拜活动与现场指引优先。" }
 }[locale];
 const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", inLanguage: content.htmlLang, mainEntity: content.faq.items.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) };
 ---
@@ -56,9 +73,26 @@ const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", inLang
 
     <section class="map-section" id="peta" aria-labelledby="tajuk-peta"><div><p class="eyebrow"><span></span>{content.map.eyebrow}</p><h2 id="tajuk-peta">{content.map.title}</h2><p>{content.map.body}</p></div><iframe title={content.map.iframeTitle} src={mapSrc} width="600" height="450" style="border:0;" allowfullscreen loading="eager" referrerpolicy="strict-origin-when-cross-origin"></iframe></section>
 
+    <section class="citations-section" aria-labelledby="tajuk-rujukan"><p class="eyebrow"><span></span>{content.citations.title}</p><ul class="citations-list">{content.citations.links.map((link) => <li><a href={link.url} target="_blank" rel="noreferrer">{link.name} <span aria-hidden="true">↗</span></a></li>)}</ul></section>
+
     <section class="around-section" id="sekitar" aria-labelledby="tajuk-sekitar"><div class="around-heading"><p class="eyebrow"><span></span>{content.nearby.eyebrow}</p><h2 id="tajuk-sekitar">{content.nearby.title}</h2><p>{content.nearby.body}</p></div><div class="around-grid">{content.nearby.cards.map((card, index) => <article class:list={["around-card", index % 2 === 0 ? "around-card--food" : "around-card--sight"]}><span>{card.label}</span><h3>{card.title}</h3><p>{card.body}</p></article>)}</div></section>
 
     <section class="faq-section" aria-labelledby="tajuk-faq"><div><p class="eyebrow"><span></span>{content.faq.eyebrow}</p><h2 id="tajuk-faq">{content.faq.title}</h2><p>{content.faq.body}</p></div><div class="faq-list">{content.faq.items.map((item) => <details><summary>{item.question}<span aria-hidden="true">+</span></summary><p>{item.answer}</p></details>)}</div></section>
+
+    {localTopics.length > 0 && (
+      <section class="topic-related" aria-labelledby="tajuk-explore">
+        <p class="eyebrow"><span></span>{explore.eyebrow}</p>
+        <h2 id="tajuk-explore">{explore.title}</h2>
+        <div class="topic-related-grid">
+          {localTopics.map((t) => (
+            <a class="topic-related-card" href={topicPathForLocale(locale, t.slug)}>
+              <span>{explore.readMore}</span>
+              <h3>{t.title}</h3>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
   </main>
   <footer><div class="footer-logo"><img src="/favicon.svg" width="42" height="42" alt="" /><p><b>MASJID ZAHIR</b><span>ALOR SETAR · KEDAH</span></p></div><div class="footer-note"><p>{footerLegal.declaration}</p><p>{footerLegal.imageRights}</p><p class="legal-review">{footerExtra.review}</p><p><a href="mailto:takerusota9@protommail.com">{footerExtra.contact}: takerusota9@protommail.com</a></p><p class="sources">{content.footer.sources}: <a href="https://pbt.kedah.gov.my/index.php/majlis-bandaraya-alor-setar/" target="_blank" rel="noreferrer">MBAS</a> · <a href="https://portal.kedah.gov.my/" target="_blank" rel="noreferrer">Kerajaan Negeri Kedah</a> · <a href="https://www.malaysia.travel/" target="_blank" rel="noreferrer">Tourism Malaysia</a></p></div><div class="footer-utility"><div class="legal-links">{(["privacy", "terms", "cookies"] as LegalPageKey[]).map((key) => <a href={legalPath(locale, key)}>{footerLegal.links[key]}</a>)}<a href={locale === "ms" ? "/credits/" : `/${locale}/credits/`}>{footerExtra.creditsLink}</a></div><div class="photo-credit">{content.footer.photoCredit}</div></div></footer>
 </BaseLayout>

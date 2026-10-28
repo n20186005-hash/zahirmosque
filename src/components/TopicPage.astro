@@ -1,0 +1,160 @@
+---
+/**
+ * Topic page design reminder: reuse the guide's limestone-and-ink visual language.
+ * Content is data-driven from src/data/topics. Never interpolate fallback copy
+ * across locales; each topic entry must be complete for the locale it renders.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { guide, locales, pathForLocale, type Locale } from "../data/guide";
+import { legal, legalPath, type LegalPageKey } from "../data/legal";
+import { siteExtra } from "../data/site-extra";
+import { getTopic, topicPathForLocale, topicAlternates } from "../data/topics";
+import type { TopicContent } from "../data/types";
+
+interface Props { locale: Locale; slug: string }
+const { locale, slug } = Astro.props;
+const topic = getTopic(locale, slug) as TopicContent;
+const content = guide[locale];
+const footerLegal = legal[locale];
+const footerExtra = siteExtra[locale];
+
+const guidePath = pathForLocale(locale);
+const canonicalPath = topicPathForLocale(locale, slug);
+const alternates = topicAlternates(slug);
+const homeUrl = Astro.site ? new URL(pathForLocale("ms"), Astro.site).href : "/";
+const entityId = `${homeUrl}#attraction`;
+
+const mapLink = "https://maps.app.goo.gl/kfht5TyPhxcTxfLJ6";
+const attractionSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: topic.title,
+  inLanguage: content.htmlLang,
+  description: topic.metaDescription,
+  about: {
+    "@type": ["Mosque", "TouristAttraction"],
+    name: "Masjid Zahir",
+    "@id": entityId,
+    address: { "@type": "PostalAddress", streetAddress: "Jalan Kampung Perak, Bandar Alor Setar", postalCode: "05150", addressLocality: "Alor Setar", addressRegion: "Kedah", addressCountry: "MY" },
+    geo: { "@type": "GeoCoordinates", latitude: 6.1197, longitude: 100.3662 },
+  },
+};
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: content.languageName === "English" ? "Home" : content.languageName === "Bahasa Melayu" ? "Utama" : "首页", item: homeUrl },
+    { "@type": "ListItem", position: 2, name: content.title, item: Astro.site ? new URL(canonicalPath, Astro.site).href : canonicalPath },
+  ],
+};
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  inLanguage: content.htmlLang,
+  mainEntity: topic.faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })),
+};
+
+const switchHref = (item: Locale) => (getTopic(item, slug) ? topicPathForLocale(item, slug) : pathForLocale(item));
+const relatedTopics = topic.related.filter((rel) => getTopic(locale, rel));
+const sectionLabels: Record<Locale, { back: string; snapshot: string; onThisPage: string; related: string; relatedTitle: string; readMore: string; official: string }> = {
+  ms: { back: "Kembali ke panduan Masjid Zahir", snapshot: "PANTAS", onThisPage: "Halaman ini", related: "PANDUAN LAIN", relatedTitle: "Terokai lebih banyak panduan", readMore: "Baca lagi", official: "Rujukan pelancongan rasmi" },
+  "zh-CN": { back: "返回查希尔清真寺导览", snapshot: "速览", onThisPage: "本页", related: "更多指南", relatedTitle: "探索更多指南", readMore: "继续阅读", official: "官方旅游参考" },
+  en: { back: "Back to the Masjid Zahir guide", snapshot: "AT A GLANCE", onThisPage: "On this page", related: "MORE GUIDES", relatedTitle: "Explore more guides", readMore: "Read more", official: "Official tourism references" },
+};
+const labels = sectionLabels[locale];
+---
+
+<BaseLayout title={topic.metaTitle} description={topic.metaDescription} canonicalPath={canonicalPath} lang={content.htmlLang} ogLocale={content.ogLocale} alternates={alternates} schema={[attractionSchema, breadcrumbSchema, faqSchema]}>
+  <a class="skip-link" href="#kandungan">{content.skip}</a>
+  <header class="site-header">
+    <a class="brand" href={guidePath} aria-label="Masjid Zahir"><img src="/logo.svg" width="260" height="64" alt="Masjid Zahir · Alor Setar, Kedah" /></a>
+    <nav aria-label="Navigation">
+      <a href={`${guidePath}#sejarah`}>{content.nav.history}</a>
+      <a href={`${guidePath}#lawatan`}>{content.nav.visit}</a>
+      <a href={`${guidePath}#arah`}>{content.nav.directions}</a>
+      <a href={`${guidePath}#sekitar`}>{content.nav.nearby}</a>
+    </nav>
+    <details class="language-switcher">
+      <summary aria-label={content.languageName}>{content.languageShort}<span aria-hidden="true">⌄</span></summary>
+      <div class="language-menu">{locales.map((item) => <a class:list={{ active: item === locale }} href={switchHref(item)} hreflang={guide[item].htmlLang} lang={guide[item].htmlLang}>{guide[item].languageName}</a>)}</div>
+    </details>
+    <a class="header-map" href={`${guidePath}#peta`}>{content.nav.map} <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main id="kandungan">
+    <section class="topic-hero">
+      <p class="eyebrow"><span></span>{topic.eyebrow}</p>
+      <h1>{topic.title}</h1>
+      <p class="topic-lede">{topic.intro}</p>
+      <a class="plain-link" href={guidePath}>← {labels.back}</a>
+    </section>
+
+    <aside class="topic-snapshot" aria-label={labels.snapshot}>
+      <p class="topic-snapshot-label">{labels.snapshot}</p>
+      <div class="topic-snapshot-grid">
+        {topic.snapshot.map((fact) => (
+          <div><span>{fact.label}</span><strong>{fact.value}</strong></div>
+        ))}
+      </div>
+    </aside>
+
+    <section class="topic-sections" aria-label={labels.onThisPage}>
+      {topic.sections.map((section) => (
+        <article class="topic-section"><h2>{section.heading}</h2><p>{section.body}</p></article>
+      ))}
+    </section>
+
+    <section class="faq-section" aria-labelledby="tajuk-faq-topic">
+      <div><p class="eyebrow"><span></span>{content.faq.eyebrow}</p><h2 id="tajuk-faq-topic">{content.faq.title}</h2><p>{content.faq.body}</p></div>
+      <div class="faq-list">
+        {topic.faq.map((item) => (
+          <details><summary>{item.question}<span aria-hidden="true">+</span></summary><p>{item.answer}</p></details>
+        ))}
+      </div>
+    </section>
+
+    {relatedTopics.length > 0 && (
+      <section class="topic-related" aria-labelledby="tajuk-related">
+        <p class="eyebrow"><span></span>{labels.related}</p>
+        <h2 id="tajuk-related">{labels.relatedTitle}</h2>
+        <div class="topic-related-grid">
+          {relatedTopics.map((rel) => {
+            const relTopic = getTopic(locale, rel)!;
+            return (
+              <a class="topic-related-card" href={topicPathForLocale(locale, rel)}>
+                <span>{labels.readMore}</span>
+                <h3>{relTopic.title}</h3>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    )}
+
+    <section class="citations-section" aria-labelledby="tajuk-rujukan-topic">
+      <p class="eyebrow"><span></span>{labels.official}</p>
+      <ul class="citations-list">
+        <li><a href="https://www.malaysia.travel/" target="_blank" rel="noreferrer">Tourism Malaysia <span aria-hidden="true">↗</span></a></li>
+        <li><a href="https://tourismkedah.com.my/" target="_blank" rel="noreferrer">Tourism Kedah <span aria-hidden="true">↗</span></a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-logo"><img src="/favicon.svg" width="42" height="42" alt="" /><p><b>MASJID ZAHIR</b><span>ALOR SETAR · KEDAH</span></p></div>
+    <div class="footer-note">
+      <p>{footerLegal.declaration}</p>
+      <p>{footerLegal.imageRights}</p>
+      <p class="legal-review">{footerExtra.review}</p>
+      <p><a href="mailto:takerusota9@protommail.com">{footerExtra.contact}: takerusota9@protommail.com</a></p>
+      <p class="sources">{content.footer.sources}: <a href="https://pbt.kedah.gov.my/index.php/majlis-bandaraya-alor-setar/" target="_blank" rel="noreferrer">MBAS</a> · <a href="https://portal.kedah.gov.my/" target="_blank" rel="noreferrer">Kerajaan Negeri Kedah</a> · <a href="https://www.malaysia.travel/" target="_blank" rel="noreferrer">Tourism Malaysia</a></p>
+    </div>
+    <div class="footer-utility">
+      <div class="legal-links">
+        {(["privacy", "terms", "cookies"] as LegalPageKey[]).map((key) => <a href={legalPath(locale, key)}>{footerLegal.links[key]}</a>)}
+        <a href={locale === "ms" ? "/credits/" : `/${locale}/credits/`}>{footerExtra.creditsLink}</a>
+      </div>
+      <div class="photo-credit">{content.footer.photoCredit}</div>
+    </div>
+  </footer>
+</BaseLayout>
